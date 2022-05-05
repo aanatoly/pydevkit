@@ -1,0 +1,9 @@
+.*.sw*
+*.pyc
+build/
+dist/
+*.egg-info/
+.tox/
+venv/
+.eggs/
+src/__version__.py
