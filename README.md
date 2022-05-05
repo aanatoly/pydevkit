@@ -7,6 +7,10 @@ This module contains helper functions useful in python develpment:
  * ANSI colors and other terminal features
  * derive help message from documentation
 
+To install it, run
+```bash
+pip3 install pydevkit
+```
 
 ## Logging
 
