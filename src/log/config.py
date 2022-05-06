@@ -3,7 +3,7 @@ import sys
 import os
 import json
 
-from . import term_set
+from . import conf_set, conf_get, term_set
 
 
 defaultConf = {
@@ -71,14 +71,13 @@ def _get_conf(kwargs):
     }
     vals = dict(ovals)
     vals.update(kwargs)
-    defaultConf["loggers"][""]["level"] = vals["level"].upper()
+    conf_set('level', vals["level"].upper())
+    defaultConf["loggers"][""]["level"] = conf_get('level')
     defaultConf["handlers"]["app_handler"]["formatter"] = vals["handler"]
     if vals["handler"] == "app_mini":
         if "date" not in kwargs:
             vals["date"] = "time"
-    # term_print("_get_conf 1")
     term_set(vals["color"])
-    # term_print("_get_conf 2")
 
     defaultConf["filters"]["time"]["format"] = vals["date"]
     defaultConf["filters"]["app_name"]["threads"] = vals['threads']

@@ -86,7 +86,7 @@ Add to the entrypoint
 from pydevkit.argparse import ArgumentParser
 
 def main():
-    p = ArgumentParser(help=__doc__)
+    p = ArgumentParser(_help=__doc__)
     # FIXME: add args here
     # p.add_argument("--my-arg")
     Args, UnknownArgs = p.args_resolve()
@@ -116,7 +116,7 @@ usage examples, notes etc
 then pass it to the parser
 
 ```python
-p = ArgumentParser(help=__doc__)
+p = ArgumentParser(_help=__doc__)
 ```
 
 
@@ -127,7 +127,7 @@ hardcoding it. It's enabled by default. To override it, pass `app_name`
 parameter to the parser.
 
 ```python
-p = ArgumentParser(help=__doc__, app_name='foobar')
+p = ArgumentParser(_help=__doc__, app_name='foobar')
 ```
 
 ## ANSI colors

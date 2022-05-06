@@ -14,7 +14,7 @@ sys.dont_write_bytecode = True
 
 
 import pydevkit.log.config  # noqa: F401
-from pydevkit.log import term_get, prettify
+from pydevkit.log import conf_get, term_get, prettify
 from pydevkit.argparse import ArgumentParser
 from pydevkit.shell import Shell
 import threading
@@ -48,6 +48,7 @@ def main():
         fn("%s msg", a, extra=kwargs)
     term = term_get()
     log.warning("try %sred%s string", term.red, term.normal)
+    log.debug("log level %s", conf_get('level'))
 
     sh = Shell()
     sh('echo test shell class')

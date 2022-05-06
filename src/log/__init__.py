@@ -8,34 +8,25 @@ import threading
 from ..term import Terminal
 
 
-term = None
+conf = {
+    'term': None
+}
 
 
-def term_sample_str():
-    global term
-    if term is None:
-        rc = tuple(["", "", "", ""])
-    else:
-        rc = tuple([term.red, term.normal, term.green, term.normal])
-    return "term colors: %sred%s and %sgreen%s strings" % rc
+def conf_set(key, value):
+    conf[key] = value
 
 
-def term_print(txt):
-    global term
-    print("term %s %s" % (term, txt))
-    if term is None:
-        return
-    print(term_sample_str())
+def conf_get(key, value=None):
+    return conf.get(key, value)
 
 
 def term_set(state):
-    global term
-    term = Terminal(state)
+    conf_set('term', Terminal(state))
 
 
 def term_get():
-    global term
-    return term
+    return conf_get('term')
 
 
 class ColorLevelFormatter(logging.Formatter):
@@ -62,6 +53,7 @@ class ColorLevelFormatter(logging.Formatter):
         logging.Formatter.__init__(self, *args, **kwargs)
 
     def format(self, record):
+        term = term_get()
         record.clr_level = self.colors.get(record.levelname, '')
         record.clr_details = term.white_dim
         record.clr_reset = term.normal
