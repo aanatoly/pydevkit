@@ -22,7 +22,7 @@ setup(
     ],
     url="https://github.com/aanatoly/pydevkit",
     author="Anatoly Asviyan",
-    author_email="anatoly@gmail.com",
+    author_email="aanatoly@gmail.com",
     license="GPLv2",
     packages=[
         modname,
