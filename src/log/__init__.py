@@ -159,6 +159,7 @@ def prettify(eobj):
 
 
 def log_argparse(p):
+    p = p.add_argument_group('logging', 'logging configuration')
     p.add_argument("--log-level",
                    help="values: %(choices)s; default is %(default)s",
                    metavar="arg",
@@ -170,17 +171,17 @@ def log_argparse(p):
                    choices=['auto', 'yes', 'no'],
                    default=os.environ.get('PYDEVKIT_LOG_COLOR', "auto"))
     p.add_argument("--log-handler",
-                   help="values: %(choices)s; default is %(default)s",
+                   help="message format: %(choices)s; default is %(default)s",
                    metavar="arg",
                    choices=['app', 'app_mini', 'json', 'json_mini'],
                    default=os.environ.get('PYDEVKIT_LOG_HANDLER', "app_mini"))
     p.add_argument("--log-date",
-                   help="values: predefined formats: 'datetime', 'date', 'time'"
+                   help="date format: 'datetime', 'date', 'time'"
                         " or strftime format eg '%%Y-%%m-%%d'",
                    metavar="arg",
                    default=os.environ.get('PYDEVKIT_LOG_DATE', "datetime"))
     p.add_argument("--log-threads",
-                   help="values: %(choices)s; default is %(default)s",
+                   help="show thread name: %(choices)s; default is %(default)s",
                    metavar="arg",
                    choices=['yes', 'no'],
                    default=os.environ.get('PYDEVKIT_LOG_THREADS', "no"))
