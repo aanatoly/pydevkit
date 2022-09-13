@@ -24,15 +24,10 @@ log = logging.getLogger(__name__)
 
 
 def get_args():
-    p = ArgumentParser(_help=__doc__)
+    p = ArgumentParser(_help=__doc__, version='1.2.3')
     # FIXME: add your args here
 
-    Args, UnknownArgs = p.args_resolve()
-    if UnknownArgs and UnknownArgs[0] == '--':
-        del UnknownArgs[0]
-    log.debug("Args: %s", prettify(vars(Args)))
-    log.debug("UnknownArgs: %s", UnknownArgs)
-    return Args, UnknownArgs
+    return p.args_resolve()
 
 
 def main():
@@ -47,8 +42,8 @@ def main():
         fn("%s msg", a)
         fn("%s msg", a, extra=kwargs)
     term = term_get()
-    log.warning("try %sred%s string", term.red, term.normal)
-    log.debug("log level %s", conf_get('level'))
+    print("try %sred%s string" % (term.red, term.normal))
+    print("log level %s" % conf_get('level'))
 
     sh = Shell()
     sh('echo test shell class')

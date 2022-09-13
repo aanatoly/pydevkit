@@ -1,10 +1,10 @@
 import logging.config
-import sys
 import os
 import json
 
 from . import conf_set, conf_get, term_set
 
+from pydevkit.argparse import LoggingArgumentParser
 
 defaultConf = {
     "version": 1,
@@ -41,21 +41,25 @@ defaultConf = {
         "app_mini": {
             "()": "pydevkit.log.ColorLevelFormatter",
             "format": "%(clr_details)s%(time)s%(clr_reset)s :: %(appname)s :: "
-                      "%(clr_level)s%(levelname)s%(clr_reset)s :: %(message)s %(extra)s",
+                      "%(clr_level)s%(levelname)s%(clr_reset)s :: "
+                      "%(message)s %(extra)s",
         },
         "app": {
             "()": "pydevkit.log.ColorLevelFormatter",
             "format": "%(clr_details)s%(time)s%(clr_reset)s :: %(appname)s :: "
-                      "%(clr_level)s%(levelname)-7s%(clr_reset)s :: %(message)s "
+                      "%(clr_level)s%(levelname)-7s%(clr_reset)s :: "
+                      "%(message)s "
                       "%(extra)s :: %(clr_details)s%(name)s%(clr_reset)s",
         },
         "json_mini": {
             "()": "pydevkit.log.JsonFormatter",
-            "format": "%(appname)s %(name)s %(levelname)s %(message)s %(extra)s",
+            "format": "%(appname)s %(name)s %(levelname)s %(message)s "
+                      "%(extra)s",
         },
         "json": {
             "()": "pydevkit.log.JsonFormatter",
-            "format": "%(time)s %(appname)s %(levelno)s %(levelname)s %(message)s %(extra)s %(name)s",
+            "format": "%(time)s %(appname)s %(levelno)s %(levelname)s "
+                      "%(message)s %(extra)s %(name)s",
         },
     },
 }
@@ -84,10 +88,8 @@ def _get_conf(kwargs):
     return defaultConf
 
 
-from pydevkit.argparse import ArgumentParser
-
-
 def _logging_config():
+    # print("X"* 20, "config log")
     conf_path = os.environ.get("PYDEVKIT_LOG_CONFIG", None)
     if conf_path:
         if conf_path.endswith(".json"):
@@ -96,16 +98,9 @@ def _logging_config():
         else:
             logging.config.fileConfig(conf_path)
     else:
-        args = []
-        for a in sys.argv[1:]:
-            if a == '--':
-                break
-            if a.startswith('--log-'):
-                args.append(a)
-        p = ArgumentParser(args=args)
-        Args, UnknownArgs = p.args_resolve()
+        p = LoggingArgumentParser()
+        Args, UnknownArgs = p.parse_known_args()
         args = vars(Args)
-        # print("Args", prettify(args))
         kwargs = {}
         for k, v in args.items():
             # print("Args", k, v)
@@ -115,6 +110,8 @@ def _logging_config():
 
         conf = _get_conf(kwargs)
         logging.config.dictConfig(conf)
+    log = logging.getLogger(__name__)
+    log.debug("logging: configured")
 
 
 _logging_config()

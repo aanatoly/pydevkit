@@ -44,7 +44,6 @@ $(PKG): $(env_init)
 install: $(env_init) $(PKG)
 	$(ENVON); \
 	pip install $(PKG)
-	mkdir -p artifacts; cp dist/*.whl artifacts
 
 clean:
 	$(ENVON); \
