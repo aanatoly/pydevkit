@@ -32,4 +32,8 @@ class ShellTest(unittest.TestCase):
 
     def test_params(self):
         sh = Shell()
-        pass
+        sh['a1'] = 'val-a1'
+        sh['a2'] = 'val-a2'
+        rc = sh.inp('echo %(a1)s %(a2)s')
+        answer = 'val-a1 val-a2'
+        self.assertEqual(rc, answer)
