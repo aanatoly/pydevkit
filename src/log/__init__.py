@@ -6,6 +6,7 @@ import json
 import datetime
 import threading
 from ..term import Terminal
+from .extra import prettify
 
 
 conf = {
@@ -135,53 +136,3 @@ class LogNameFilter(logging.Filter):
         if record.logname.startswith(pfx):
             record.logname = 'main' + record.logname[len(pfx):]
         return True
-
-
-class AllEncoder(json.JSONEncoder):
-    reg = re.compile('\\s+at\\s+[^>]+')
-
-    def no_addr(self, s):
-        return self.reg.sub('', s)
-
-    def default(self, obj):
-        if hasattr(obj, '__call__'):
-            return self.no_addr(str(obj))
-        elif isinstance(obj, object):
-            return self.no_addr(str(obj))
-        try:
-            return json.JSONEncoder.default(self, obj)
-        except:
-            return str(obj)
-
-
-def prettify(eobj):
-    return json.dumps(eobj, indent=4, sort_keys=True, cls=AllEncoder)
-
-
-def log_argparse(p):
-    p = p.add_argument_group('logging', 'logging configuration')
-    p.add_argument("--log-level",
-                   help="values: %(choices)s; default is %(default)s",
-                   metavar="arg",
-                   choices=['debug', 'info', 'warning', 'error', 'critical'],
-                   default=os.environ.get('PYDEVKIT_LOG_LEVEL', "info"))
-    p.add_argument("--log-color",
-                   help="values: %(choices)s; default is %(default)s",
-                   metavar="arg",
-                   choices=['auto', 'yes', 'no'],
-                   default=os.environ.get('PYDEVKIT_LOG_COLOR', "auto"))
-    p.add_argument("--log-handler",
-                   help="message format: %(choices)s; default is %(default)s",
-                   metavar="arg",
-                   choices=['app', 'app_mini', 'json', 'json_mini'],
-                   default=os.environ.get('PYDEVKIT_LOG_HANDLER', "app_mini"))
-    p.add_argument("--log-date",
-                   help="date format: 'datetime', 'date', 'time'"
-                        " or strftime format eg '%%Y-%%m-%%d'",
-                   metavar="arg",
-                   default=os.environ.get('PYDEVKIT_LOG_DATE', "datetime"))
-    p.add_argument("--log-threads",
-                   help="show thread name: %(choices)s; default is %(default)s",
-                   metavar="arg",
-                   choices=['yes', 'no'],
-                   default=os.environ.get('PYDEVKIT_LOG_THREADS', "no"))
