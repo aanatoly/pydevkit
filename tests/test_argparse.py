@@ -2,6 +2,7 @@ import unittest
 from pydevkit.argparse import EnvAction
 from argparse import ArgumentParser as LibArgumentParser
 from pydevkit.argparse import ArgumentParser
+from pydevkit.argparse import LoggingArgumentParser
 from pydevkit.argparse import PdkHelpFormatter
 from pydevkit.log import prettify
 import os
@@ -93,3 +94,52 @@ class PdkHelpFormatterTest(unittest.TestCase):
     def test_env_yes(self):
         os.environ['PDK_LEVEL'] = 'val-env'
         self.test_env_no()
+
+
+class LoggingArgumentParserTest(unittest.TestCase):
+    def setUp(self):
+        if 'PYDEVKIT_LOG_LEVEL' in os.environ:
+            del os.environ['PYDEVKIT_LOG_LEVEL']
+
+    def tearDown(self):
+        pass
+
+    def libp_new(self, **kwargs):
+        libp = LoggingArgumentParser(**kwargs)
+        return libp
+
+    def dict_eq(self, a1, a2):
+        a1 = prettify(vars(a1))
+        a2 = prettify(vars(a2))
+        return a1 == a2
+
+    def parse_args(self, elevel, clevel, alevel):
+        answer = {
+            "log_color": "auto",
+            "log_date": "datetime",
+            "log_handler": "app_mini",
+            "log_level": "info",
+            "log_threads": "no"
+        }
+        if alevel:
+            answer['log_level'] = alevel
+        if elevel:
+            os.environ['PYDEVKIT_LOG_LEVEL'] = elevel
+        if clevel:
+            cmd = ['--log-level', clevel]
+        else:
+            cmd = []
+        libp = self.libp_new()
+        args, uargs = libp.parse_known_args(cmd)
+        args = vars(args)
+        # print("args", args)
+        self.assertEqual(args, answer)
+
+    def test_cmd_no_env_no(self):
+        self.parse_args(None, None, None)
+
+    def test_cmd_no_env_yes(self):
+        self.parse_args('error', None, 'error')
+
+    def test_cmd_yes_env_yes(self):
+        self.parse_args('error', 'debug', 'debug')
