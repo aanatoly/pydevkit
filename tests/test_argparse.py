@@ -68,13 +68,18 @@ class PdkHelpFormatterTest(unittest.TestCase):
     def setUp(self):
         if 'PDK_LEVEL' in os.environ:
             del os.environ['PDK_LEVEL']
-        self.answer = "  --level arg  n/a (default: val-default) (envvar: PDK_LEVEL)"
 
     def tearDown(self):
         pass
 
-    def libp_new(self, **kwargs):
-        kwargs['formatter_class'] = PdkHelpFormatter
+    def do_test(self, envval, add_default, add_env, answer):
+        if envval:
+            os.environ['PDK_LEVEL'] = envval
+
+        def _fmt(prog):
+            return PdkHelpFormatter(prog, add_env=add_env, add_default=add_default)
+
+        kwargs = {'formatter_class': _fmt}
         libp = LibArgumentParser(**kwargs)
         libp.add_argument("--level",
                        help="n/a",
@@ -82,18 +87,31 @@ class PdkHelpFormatterTest(unittest.TestCase):
                        action=EnvAction,
                        envvar='PDK_LEVEL',
                        default="val-default")
-        return libp
-
-    def test_env_no(self):
-        libp = self.libp_new()
         rc = libp.format_help()
         rc = [line for line in rc.splitlines() if line.startswith('  --level')]
         rc = rc[0]
-        self.assertEqual(rc, self.answer)
+        # print("rc", rc)
+        self.assertEqual(rc, answer)
 
-    def test_env_yes(self):
-        os.environ['PDK_LEVEL'] = 'val-env'
-        self.test_env_no()
+    def test_env_no_show_def_yes_show_env_yes(self):
+        answer = "  --level arg  n/a (default: val-default) (envvar: PDK_LEVEL)"
+        self.do_test(None, True, True, answer)
+
+    def test_env_yes_show_def_yes_show_env_yes(self):
+        answer = "  --level arg  n/a (default: val-default) (envvar: PDK_LEVEL)"
+        self.do_test('val-env', True, True, answer)
+
+    def test_env_yes_show_def_no_show_env_yes(self):
+        answer = "  --level arg  n/a (envvar: PDK_LEVEL)"
+        self.do_test('val-env', False, True, answer)
+
+    def test_env_yes_show_def_yes_show_env_no(self):
+        answer = "  --level arg  n/a (default: val-default)"
+        self.do_test('val-env', True, False, answer)
+
+    def test_env_yes_show_def_no_show_env_no(self):
+        answer = "  --level arg  n/a"
+        self.do_test('val-env', False, False, answer)
 
 
 class LoggingArgumentParserTest(unittest.TestCase):
