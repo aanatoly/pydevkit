@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 '''
-Main description
+Demonstrates pydevkit features.
 
 EPILOG:
-Example1
+Example1:
+PYDEVKIT_LOG_HANDLER=app ./script --log-level=debug
 
-Example2
+Example2:
+./script --log-level=debug --log-handler=json
 '''
 
 
-import sys
-sys.dont_write_bytecode = True
-
-
 import pydevkit.log.config  # noqa: F401
-from pydevkit.log import conf_get, term_get, prettify
+from pydevkit.conf import conf_set, conf_get
+from pydevkit.log import prettify
+from pydevkit.term import term_get
 from pydevkit.argparse import ArgumentParser
 from pydevkit.shell import Shell
 import threading
@@ -28,7 +28,7 @@ def get_args():
     # FIXME: add your args here
     p.add_argument("file", help="file arg", nargs=None)
 
-    return p.args_resolve()
+    return p.parse_known_args()
 
 
 def main():
@@ -37,17 +37,25 @@ def main():
         log.warning("Unknown arguments: %s", UnknownArgs)
         # exit(1)
     threading.current_thread().name = 'main'
+
+    print(">> Test logging")
     kwargs = {'extra': {'ip': '10.0.0.1'}}
     for a in ['debug', 'info', 'warning', 'error', 'critical']:
         fn = getattr(log, a)
         fn("%s msg", a)
         fn("%s msg", a, extra=kwargs)
+    log.debug("kwargs\n%s", prettify(kwargs))
+
+    print(">> Test terminal colors")
     term = term_get()
     print("try %sred%s string" % (term.red, term.normal))
-    print("log level %s" % conf_get('level'))
 
+    print(">> Test conf")
+    print("conf: log level %s" % conf_get('level'))
+
+    print(">> Test shell")
     sh = Shell()
-    sh('echo test shell class')
+    sh('echo hello, world')
 
 
 if __name__ == '__main__':

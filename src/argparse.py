@@ -20,22 +20,22 @@ class EnvAction(argparse.Action):
 
 
 class PdkHelpFormatter(argparse.RawDescriptionHelpFormatter):
-    def __init__(self, prog, add_default=True, add_env=True, **kwargs):
+    def __init__(self, prog, show_default=True, show_envvar=True, **kwargs):
         super().__init__(prog, **kwargs)
-        self.add_default = add_default
-        self.add_env = add_env
+        self.show_default = show_default
+        self.show_envvar = show_envvar
 
     def _get_help_string(self, action):
         help = action.help
         defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
-        if (self.add_default and '%(default)' not in action.help and
+        if (self.show_default and '%(default)' not in action.help and
                 action.default is not argparse.SUPPRESS and
                 (action.option_strings or action.nargs in defaulting_nargs)):
             help += ' (default: %(default)s)'
         if hasattr(action, 'orig_default'):
             help = help.replace('%(default)', '%(orig_default)')
 
-        if self.add_env and hasattr(action, 'envvar'):
+        if self.show_envvar and hasattr(action, 'envvar'):
             help += ' (envvar: %(envvar)s)'
 
         return help
@@ -107,11 +107,11 @@ class LoggingArgumentParser(argparse.ArgumentParser):
 
 
 class PdkArgumentParser(argparse.ArgumentParser):
-    def __init__(self, version=None, usage="full", add_default=True, add_env=True, **kwargs):
+    def __init__(self, version=None, usage="full", show_default=True, show_envvar=True, **kwargs):
         def _fmt(prog):
             return PdkHelpFormatter(prog,
-                                    add_env=add_env,
-                                    add_default=add_default)
+                                    show_envvar=show_envvar,
+                                    show_default=show_default)
 
         kwargs['formatter_class'] = _fmt
 

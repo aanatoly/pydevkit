@@ -1,10 +1,12 @@
 import logging.config
 import os
 import json
+import sys
 
-from . import conf_set, conf_get, term_set
-
+from . import term_set
+from pydevkit.conf import conf_set, conf_get
 from pydevkit.argparse import LoggingArgumentParser
+
 
 defaultConf = {
     "version": 1,
@@ -81,7 +83,11 @@ def _get_conf(kwargs):
     if vals["handler"] == "app_mini":
         if "date" not in kwargs:
             vals["date"] = "time"
-    term_set(vals["color"])
+    color = vals['color']
+    if color == 'auto':
+        color = "yes" if sys.stderr.isatty() else "no"
+    conf_set('color', color)
+    term_set(color)
 
     defaultConf["filters"]["time"]["format"] = vals["date"]
     defaultConf["filters"]["app_name"]["threads"] = vals['threads']

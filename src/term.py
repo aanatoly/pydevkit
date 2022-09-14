@@ -1,4 +1,5 @@
 import sys
+from .conf import conf_get
 
 import logging
 log = logging.getLogger(__name__)
@@ -56,3 +57,7 @@ class Terminal:
         if rc:
             return '\x1b[' + ';'.join(rc) + 'm'
         return ""
+
+
+def term_get():
+    return Terminal(conf_get('color'))

@@ -1,11 +1,20 @@
 # pydevkit
-This module contains helper functions useful in python develpment:
- * consistent logging format in all scripts
- * logging control via environment variables
- * logging control via command-line options
- * formatting of shell commands and collecting an output
- * ANSI colors and other terminal features
- * derive help message from documentation
+Welcome to Python Development Kit.
+
+It provides functionality, frequently needed in a python develpment:
+ * logging
+    * 4 predefined configurations (incl json logs)
+    * control via command-line
+    * control via environment variables
+ * colors
+    * ANSI coloration with command-line control
+ * shell
+    * printf-like shell command wrapper
+ * argparse
+    * environment-aware options with lookup order
+      command line `>` environemnt `>` default
+    * use module doc string as a help message
+    * help formatter with switchable default and source var sections
 
 To install it, run
 ```bash
@@ -14,40 +23,35 @@ pip3 install pydevkit
 
 ## Logging
 
-This module provides an easy logging configuration.
+Out-of-the-box logging configuration.<br>
 
-First of all, it solves a problem of logging format consistency among different
-scripts and libraries. It provides a set of usefull logging configurations and
-allows you to select one at a run-time and make every instrumented script to
-use it. The settings also applies to all imported modules recursivly.
-
-
-Second, you can have usefull logging configuration without writing a line of
-code.  No more copy-pasty-ing some usefull settings from script to script.
-
-Third, you can select configuration via environment variables or command line
-options. Again, without writing a line of code.
-
-For example<br>
 ![Alt text](doc/log.png "a title")
 
 
-### Usage
-You should add this line to the entrypoint of a script.
+#### Usage
+Add this line to the entrypoint.
 ```python
-import pydevkit.log.config
+import pydevkit.log.config  # noqa: F401
+from pydevkit.argparse import ArgumentParser
+
+def get_args():
+    p = ArgumentParser(help=__doc__, version='1.2.3')
 ```
 
-No need to modify any other code. It will automatically apply to all modules
-using the standard approach
+No need to modify any other code. It should use standard `logging` module.
 
 ```python
 import logging
 log = logging.getLogger(__name__)
 ```
-### Run-time options
+#### Run-time options
 
-Below is the list of a run-time logging options.
+Now you can use both `PYDEVKIT_LOG_` environment variables and `--log-`
+comand-line options. For example:
+```bash
+PYDEVKIT_LOG_HANDLER=app ./script --log-level=debug
+```
+Here is the list of all logging options:
  * level - `debug`, `info`, `warning`, `error`, `critical`
  * handler - `app`, `app_mini`, `json`, `json_mini`
  * date -  `datetime`, `date`, `time` or strftime format eg `%Y-%m-%d`
@@ -55,23 +59,17 @@ Below is the list of a run-time logging options.
    for terminals and disable when output is redirected to pipe or file.
  * threads - `yes`, `no`. Include thread name in a log
 
-To set an option use relevant `PYDEVKIT_LOG_` environment variable or `--log-`
-comand-line option. For example
-```bash
-export PYDEVKIT_LOG_HANDLER=app
-./script --log-handler=app
-```
 
-### Developer info
-You can pass extra args with
+#### Developer info
+You can pass extra args to the logger with
 ```python
 log.info("main text", extra={"extra": {"more": "info"}})
 ```
 
-### Exrternal configuration
-If `PYTHON_LOGGING_CONFIG` variable defined, it loads file var points to
-and configures logging. If file ends with ".json" `dictConfig` is used otherwise
-`fileConfig`.
+#### Exrternal configuration
+If `PYTHON_LOGGING_CONFIG` variable is defined and points to a file, PDK will
+use it to configure standard `logging` module, using `dictConfig` (for json files)
+or `fileConfig` methods.
 
 
 ## Argparse

@@ -1,7 +1,6 @@
 import unittest
 from pydevkit.argparse import EnvAction
 from argparse import ArgumentParser as LibArgumentParser
-from pydevkit.argparse import ArgumentParser
 from pydevkit.argparse import PdkArgumentParser
 from pydevkit.argparse import LoggingArgumentParser
 from pydevkit.argparse import PdkHelpFormatter
@@ -19,14 +18,14 @@ class EnvActionTest(unittest.TestCase):
 
     def libp_new(self, **kwargs):
         libp = LibArgumentParser(**kwargs)
-        libp.add_argument("--level",
-                       help="n/a",
-                       metavar="arg",
-                       action=EnvAction,
-                       envvar='PDK_LEVEL',
-                       default="val-default")
+        libp.add_argument(
+            "--level",
+            help="n/a",
+            metavar="arg",
+            action=EnvAction,
+            envvar='PDK_LEVEL',
+            default="val-default")
         return libp
-
 
     def test_cmd_yes_env_no(self):
         answer = '''{
@@ -41,7 +40,6 @@ class EnvActionTest(unittest.TestCase):
     def test_cmd_yes_env_yes(self):
         os.environ['PDK_LEVEL'] = 'val-env'
         self.test_cmd_yes_env_no()
-
 
     def test_cmd_no_env_yes(self):
         cmd = []
@@ -73,21 +71,23 @@ class PdkHelpFormatterTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def do_test(self, envval, add_default, add_env, answer):
+    def do_test(self, envval, show_default, show_envvar, answer):
         if envval:
             os.environ['PDK_LEVEL'] = envval
 
         def _fmt(prog):
-            return PdkHelpFormatter(prog, add_env=add_env, add_default=add_default)
+            return PdkHelpFormatter(prog, show_envvar=show_envvar,
+                                    show_default=show_default)
 
         kwargs = {'formatter_class': _fmt}
         libp = LibArgumentParser(**kwargs)
-        libp.add_argument("--level",
-                       help="n/a",
-                       metavar="arg",
-                       action=EnvAction,
-                       envvar='PDK_LEVEL',
-                       default="val-default")
+        libp.add_argument(
+            "--level",
+            help="n/a",
+            metavar="arg",
+            action=EnvAction,
+            envvar='PDK_LEVEL',
+            default="val-default")
         rc = libp.format_help()
         rc = [line for line in rc.splitlines() if line.startswith('  --level')]
         rc = rc[0]
