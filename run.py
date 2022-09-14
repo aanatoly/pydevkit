@@ -24,8 +24,9 @@ log = logging.getLogger(__name__)
 
 
 def get_args():
-    p = ArgumentParser(_help=__doc__, version='1.2.3')
+    p = ArgumentParser(help=__doc__, version='1.2.3', usage="short")
     # FIXME: add your args here
+    p.add_argument("file", help="file arg", nargs=None)
 
     return p.args_resolve()
 

@@ -40,6 +40,27 @@ class PdkHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
         return help
 
+    def _format_usage_short(self, usage, actions, groups, prefix):
+        groups = []
+        # print("XXX: add_usage: usage:", usage)
+        for action in actions:
+            tmp = getattr(action, 'container', None)
+            if tmp.title and tmp.title not in groups:
+                groups.append(tmp.title)
+        groups = ' '.join(['[' + g + ']' for g in groups])
+        return 'usage: %s %s\n' % (self._prog, groups)
+
+    def add_usage(self, usage, actions, groups, prefix=None):
+        if usage == "short":
+            args = usage, actions, groups, prefix
+            self._add_item(self._format_usage_short, args)
+        elif usage == "full" or usage is None:
+            args = None, actions, groups, prefix
+            self._add_item(self._format_usage, args)
+        else:
+            args = usage, actions, groups, prefix
+            self._add_item(self._format_usage, args)
+
 
 class LoggingArgumentParser(argparse.ArgumentParser):
     def __init__(self):
@@ -86,9 +107,10 @@ class LoggingArgumentParser(argparse.ArgumentParser):
 
 
 class PdkArgumentParser(argparse.ArgumentParser):
-    def __init__(self, version=None, add_default=True, add_env=True, **kwargs):
+    def __init__(self, version=None, usage="full", add_default=True, add_env=True, **kwargs):
         def _fmt(prog):
-            return PdkHelpFormatter(prog, add_env=add_env,
+            return PdkHelpFormatter(prog,
+                                    add_env=add_env,
                                     add_default=add_default)
 
         kwargs['formatter_class'] = _fmt
@@ -99,6 +121,8 @@ class PdkArgumentParser(argparse.ArgumentParser):
             kwargs['description'] = tmp[0]
             kwargs['epilog'] = tmp[1] if len(tmp) == 2 else None
             del kwargs['help']
+
+        kwargs['usage'] = usage
 
         app_parents = kwargs.get('parents', [])
         kwargs['parents'] = app_parents + [LoggingArgumentParser()]
@@ -120,8 +144,8 @@ class PdkArgumentParser(argparse.ArgumentParser):
 
 
 class ArgumentParser(PdkArgumentParser):
-    def __init__(self, _help=None, **kwargs):
-        kwargs['help'] = _help
+    def __init__(self, _help=None, help=None, **kwargs):
+        kwargs['help'] = _help or help
         super().__init__(**kwargs)
 
     def args_resolve(self, args=None):
