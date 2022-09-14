@@ -2,6 +2,7 @@ import unittest
 from pydevkit.argparse import EnvAction
 from argparse import ArgumentParser as LibArgumentParser
 from pydevkit.argparse import ArgumentParser
+from pydevkit.argparse import PdkArgumentParser
 from pydevkit.argparse import LoggingArgumentParser
 from pydevkit.argparse import PdkHelpFormatter
 from pydevkit.log import prettify
@@ -161,3 +162,47 @@ class LoggingArgumentParserTest(unittest.TestCase):
 
     def test_cmd_yes_env_yes(self):
         self.parse_args('error', 'debug', 'debug')
+
+
+class PdkArgumentParserTest(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def do_help_test(self, **kwargs):
+        p = PdkArgumentParser(**kwargs)
+        rc = p.format_help()
+        # print("help", rc)
+        return rc
+
+    def test_version(self):
+        answer = '  --version '
+        rc = self.do_help_test(version='1.2.3')
+        self.assertIn(answer, rc)
+        rc = self.do_help_test()
+        self.assertNotIn(answer, rc)
+
+    def test_usage(self):
+        answer = '  [--log-'
+        rc = self.do_help_test(usage="full")
+        self.assertIn(answer, rc)
+        rc = self.do_help_test(usage="short")
+        self.assertNotIn(answer, rc)
+        answer = '[optional arguments] [logging]'
+        self.assertIn(answer, rc)
+
+    def test_help(self):
+        help = '''
+Some help 1
+another line
+
+EPILOG:
+epilog1
+epilog2
+'''
+        rc = self.do_help_test(help=help)
+        answer = help.split('\nEPILOG:\n')
+        self.assertIn(answer[0], rc)
+        self.assertIn(answer[1], rc)
