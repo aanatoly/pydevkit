@@ -16,40 +16,51 @@ It provides functionality, frequently needed in a python develpment:
     * use module doc string as a help message
     * help formatter with switchable default and source var sections
 
-To install it, run
+#### Usage
+To use `pydevkit` in your project, follow these steps
+
+Install it
 ```bash
 pip3 install pydevkit
 ```
 
-## Logging
-
-Out-of-the-box logging configuration.<br>
-
-![Alt text](doc/log.png "a title")
-
-
-#### Usage
-Add this line to the entrypoint.
+Modify entrypoint to look like this
 ```python
 import pydevkit.log.config  # noqa: F401
 from pydevkit.argparse import ArgumentParser
 
 def get_args():
     p = ArgumentParser(help=__doc__, version='1.2.3')
+    # FIXME: add your args here
+    p.add_argument("--file", help="file arg")
+
+    return p.parse_known_args()
+
+def main():
+    Args, UnknownArgs = get_args()
+
 ```
 
-No need to modify any other code. It should use standard `logging` module.
+No need to modify any other code. Instead, continue to use standard `logging`
+module.
 
 ```python
 import logging
 log = logging.getLogger(__name__)
 ```
-#### Run-time options
 
-Now you can use both `PYDEVKIT_LOG_` environment variables and `--log-`
+We're done. Now your script has working logging configuration.
+<br><br>
+<img src="doc/help-logging.png" width="100%" /><br>
+<img src="doc/help-output.png" width="100%" /><br>
+
+## Logging
+
+#### Run-time options
+To control logging, you can use both `PYDEVKIT_LOG_` environment variables and `--log-`
 comand-line options. For example:
 ```bash
-PYDEVKIT_LOG_HANDLER=app ./script --log-level=debug
+PYDEVKIT_LOG_HANDLER=app ./run.py --log-level=debug
 ```
 Here is the list of all logging options:
  * level - `debug`, `info`, `warning`, `error`, `critical`
@@ -73,29 +84,33 @@ or `fileConfig` methods.
 
 
 ## Argparse
-Custom ArgParse wrapper featuring
- * derive help from documentation
- * auto-detect application name
- * add logging options
+Custom ArgumentParserParse wrapper featuring
+ * derive help (description + epilog) from single doc string
+ * automatic `version` option
+ * show / hide option's default value
+ * show / hide option's envvar
+ * built-in logging options
 
-### Usage
-Add to the entrypoint
 ```python
-from pydevkit.argparse import ArgumentParser
-
-def main():
-    p = ArgumentParser(_help=__doc__)
-    # FIXME: add args here
-    # p.add_argument("--my-arg")
-    Args, UnknownArgs = p.args_resolve()
-
+class ArgumentParser(
+      help=None, version=None, usage="full",
+      show_default=True, show_envvar=True, **kwargs)
 ```
 
-### Add logging options
-Provided `ArgParser` has all logging options and upon resolve will automatically
-configure logging
+All standard keywords work as well. New parameters are:
+ * help - gets single string, usually module's doc string,
+   if `\nEPILOG:\n` is present, splits it into `description` and `epilog`,
+   otherwise just `description`
+ * version - if suplied, PDK adds `--version` command-line option
+ * usage - when "full" or None, PDK builds standard long usage<br>
+   `usage: run.py [-h] [--log-level arg] [--log-color arg] [--log-handler arg]`,
+   <br>when "short" <br>
+   `usage: run.py [options] [logging]`
+ * show_default - add `(default: XXX)` to help
+ * show_envvar - add `(envvar: XXX)` to help
 
-### Derive help from documentation
+
+#### Derive help from documentation
 This feature allows you to use single string, usually main `__doc__`string, to
 initialize `ArgParser`. Add documentation string to the entrypoint
 
@@ -114,28 +129,14 @@ usage examples, notes etc
 then pass it to the parser
 
 ```python
-p = ArgumentParser(_help=__doc__)
-```
-
-
-### Auto-detect application name
-
-This feature allows you to use script's real name in a help message, instead of
-hardcoding it. It's enabled by default. To override it, pass `app_name`
-parameter to the parser.
-
-```python
-p = ArgumentParser(_help=__doc__, app_name='foobar')
+p = ArgumentParser(help=__doc__)
 ```
 
 ## ANSI colors
 
-ANSI colors based on `blessing.Terminal` wrapper  and `log-color` option.  If
-`auto` is selected, module will enable colors if output is terminal and disable
-otherwise (redirection to pipe or file).
-
+ANSI colors controlled by `--log-color` option.
 ```python
-from pydevkit.log import term_get
+from pydevkit.term import term_get
 
 def main():
     term = term_get()
@@ -144,7 +145,18 @@ def main():
 
 
 ## Shell commands
-TBD
+Simple `printf`-like shell wrapper
+
+```bash
+from pydevkit.shell import Shell
+
+sh = Shell()
+sh['a1'] = 'long string'
+sh['a2'] = 'long string'
+cmd = 'echo %(a1)s %(a2)s'
+sh(cmd)            # print stdout
+txt = sh.inp(cmd)  # grap stdout
+```
 
 ## Misc
 TBD
