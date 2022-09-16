@@ -190,7 +190,7 @@ class PdkArgumentParserTest(unittest.TestCase):
         self.assertIn(answer, rc)
         rc = self.do_help_test(usage="short")
         self.assertNotIn(answer, rc)
-        answer = '[optional arguments] [logging]'
+        answer = '[logging]'
         self.assertIn(answer, rc)
 
     def test_help(self):
