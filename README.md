@@ -155,7 +155,7 @@ sh['a1'] = 'long string'
 sh['a2'] = 'long string'
 cmd = 'echo %(a1)s %(a2)s'
 sh(cmd)            # print stdout
-txt = sh.inp(cmd)  # grap stdout
+txt = sh.inp(cmd)  # grab stdout
 ```
 
 ## Misc
