@@ -2,7 +2,7 @@ import json
 import re
 
 
-class AllEncoder(json.JSONEncoder):
+class _AllEncoder(json.JSONEncoder):
     reg = re.compile('\\s+at\\s+[^>]+')
 
     def no_addr(self, s):
@@ -20,4 +20,4 @@ class AllEncoder(json.JSONEncoder):
 
 
 def prettify(eobj):
-    return json.dumps(eobj, indent=4, sort_keys=True, cls=AllEncoder)
+    return json.dumps(eobj, indent=4, sort_keys=True, cls=_AllEncoder)
