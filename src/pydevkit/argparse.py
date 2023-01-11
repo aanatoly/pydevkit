@@ -28,9 +28,9 @@ class PdkHelpFormatter(argparse.RawDescriptionHelpFormatter):
     def _get_help_string(self, action):
         help = action.help
         defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
-        if (self.show_default and '%(default)' not in action.help and
-                action.default is not argparse.SUPPRESS and
-                (action.option_strings or action.nargs in defaulting_nargs)):
+        if (self.show_default and ('%(default)' not in action.help)
+                and (action.default is not argparse.SUPPRESS)
+                and (action.option_strings or action.nargs in defaulting_nargs)):
             help += ' (default: %(default)s)'
         if hasattr(action, 'orig_default'):
             help = help.replace('%(default)', '%(orig_default)')
@@ -107,7 +107,8 @@ class LoggingArgumentParser(argparse.ArgumentParser):
 
 
 class PdkArgumentParser(argparse.ArgumentParser):
-    def __init__(self, version=None, usage="full", show_default=True, show_envvar=True, **kwargs):
+    def __init__(self, version=None, usage="full", show_default=True,
+                 show_envvar=True, **kwargs):
         def _fmt(prog):
             return PdkHelpFormatter(prog,
                                     show_envvar=show_envvar,

@@ -15,7 +15,7 @@ class _AllEncoder(json.JSONEncoder):
             return self.no_addr(str(obj))
         try:
             return json.JSONEncoder.default(self, obj)
-        except:
+        except Exception:
             return str(obj)
 
 

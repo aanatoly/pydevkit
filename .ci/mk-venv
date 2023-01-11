@@ -1,0 +1,22 @@
+#!/bin/bash
+
+apython=$1
+avenv=$2
+shift 2
+pkgs="$@"
+syspkgs="pip setuptools wheel"
+mkdir -p cache wheels
+
+echo "Create $avenv venv"
+$apython -m venv $avenv
+. $avenv/bin/activate
+pip config set --site global.cache-dir cache/
+set -e
+echo "Install sys packages: $syspkgs"
+pip wheel -w wheels $syspkgs
+pip install -f wheels/ --no-index -U $syspkgs
+
+echo "Install user packages: $pkgs"
+pip wheel -w wheels $pkgs
+pip install -f wheels/ --no-index $pkgs
+echo

@@ -1,9 +1,9 @@
 .*.sw*
 *.pyc
-build/
-dist/
-*.egg-info/
+/build/
+/dist/
+/cache/
+/wheels/
 .tox/
-venv/
-.eggs/
-src/__version__.py
+/.venv/
+__version__.py

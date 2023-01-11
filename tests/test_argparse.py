@@ -185,7 +185,7 @@ class PdkArgumentParserTest(unittest.TestCase):
         self.assertNotIn(answer, rc)
 
     def test_usage(self):
-        answer = '  [--log-'
+        answer = ' [--log-'
         rc = self.do_help_test(usage="full")
         self.assertIn(answer, rc)
         rc = self.do_help_test(usage="short")
