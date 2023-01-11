@@ -43,13 +43,13 @@ defaultConf = {
         "app_mini": {
             "()": "pydevkit.log.ColorLevelFormatter",
             "format": "%(clr_details)s%(time)s%(clr_reset)s :: %(appname)s :: "
-                      "%(clr_level)s%(levelname)s%(clr_reset)s :: "
+                      "%(clr_level)s%(levelname)-5s%(clr_reset)s :: "
                       "%(message)s %(extra)s",
         },
         "app": {
             "()": "pydevkit.log.ColorLevelFormatter",
             "format": "%(clr_details)s%(time)s%(clr_reset)s :: %(appname)s :: "
-                      "%(clr_level)s%(levelname)-7s%(clr_reset)s :: "
+                      "%(clr_level)s%(levelname)-5s%(clr_reset)s :: "
                       "%(message)s "
                       "%(extra)s :: %(clr_details)s%(name)s%(clr_reset)s",
         },
