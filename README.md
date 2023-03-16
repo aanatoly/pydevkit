@@ -1,4 +1,9 @@
 # pydevkit
+[![PyPI](https://img.shields.io/pypi/v/pydevkit?style=flat-square)](https://pypi.python.org/pypi/pydevkit/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pydevkit?style=flat-square)](https://pypi.python.org/pypi/pydevkit/)
+[![PyPI - License](https://img.shields.io/pypi/l/pydevkit?style=flat-square)](https://pypi.python.org/pypi/pydevkit/)
+[![Downloads](https://static.pepy.tech/badge/pydevkit)](https://pepy.tech/project/pydevkit)
+
 Welcome to Python Development Kit.
 
 It provides functionality, frequently needed in a python develpment:
@@ -51,8 +56,8 @@ log = logging.getLogger(__name__)
 
 We're done. Now your script has working logging configuration.
 <br><br>
-<img src="doc/help-logging.png" width="100%" /><br>
-<img src="doc/help-output.png" width="100%" /><br>
+<img src="docs/help-logging.png" width="100%" /><br>
+<img src="docs/help-output.png" width="100%" /><br>
 
 ## Logging
 
@@ -160,3 +165,6 @@ txt = sh.inp(cmd)  # grab stdout
 
 ## Misc
 TBD
+
+## Development
+See [development](docs/devel.md) doc

@@ -16,27 +16,14 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Software Development",
 ]
+
 dependencies = []
 
-
 [project.urls]
-Homepage = "https://github.com/aanatoly/pydevkit"
+Homepage   = "https://github.com/aanatoly/pydevkit"
+Repository = "https://github.com/aanatoly/pydevkit"
 
-# ########### hatch
-# [build-system]
-# requires = ["hatchling", "hatch-vcs"]
-# build-backend = "hatchling.build"
-
-# [tool.hatch.version]
-# source = "vcs"
-
-# [tool.hatch.build]
-# package-dir = "src"
-
-# [tool.hatch.build.hooks.vcs]
-# version-file = "src/pydevkit/__version__.py"
-
-########### pdm
+#### pdm ####
 [build-system]
 requires = ["pdm-pep517"]
 build-backend = "pdm.pep517.api"
@@ -48,3 +35,6 @@ write_template = "__version__ = '{}'"
 
 [tool.pdm.build]
 excludes = [ "**/.*.sw*" ]
+
+[tool.cruft]
+skip = ["README.md", "tests/"]

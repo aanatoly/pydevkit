@@ -1,9 +1,20 @@
-.*.sw*
-*.pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
 /build/
 /dist/
-/cache/
-/wheels/
+/wheels/*.whl
+
+# vim tswap files
+.*.sw*
+
+# build venv
+.venv
+venv/
+
+# tox venv
 .tox/
-/.venv/
-__version__.py

@@ -1,0 +1,22 @@
+{
+  "template": "https://github.com/aanatoly/pdk-cookiecutter.git",
+  "commit": "8b736ae2bb5bd1fc3f1b56a194368b5fbc06af58",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "author_name": "Anatoly Asviyan",
+      "author_email": "aanatoly@gmail.com",
+      "github_username": "aanatoly",
+      "project_name": "pydevkit",
+      "project_slug": "pydevkit",
+      "package_name": "pydevkit",
+      "project_short_description": "python development kit",
+      "build_backend": "pdm",
+      "_copy_without_render": [
+        ".ci/venv"
+      ],
+      "_template": "https://github.com/aanatoly/pdk-cookiecutter.git"
+    }
+  },
+  "directory": null
+}

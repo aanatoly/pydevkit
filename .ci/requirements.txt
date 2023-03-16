@@ -1,0 +1,10 @@
+build
+setuptools_scm[toml]
+tox
+flake8
+black
+cruft
+toml
+pre-commit
+pdm
+pdm.pep517

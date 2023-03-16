@@ -1,48 +1,37 @@
 
 SHELL := /bin/bash
-PYTHON ?= python3
-
-# Virtual Env, one per OS to avoid mess
-slug = $(shell $(1) |& sed -e 's/ /-/g' | tr '[:upper:]' '[:lower:]')
-env_distro = $(call slug,lsb_release -ds)
-env_python = $(call slug,$(PYTHON) --version)
+export PYTHON ?= python3
 
 define penv
-PE_$(1) = .venv/$(env_distro)/$(env_python)-$(1)
-PE_$(1)_BIN = $$(PE_$(1))/bin
-PE_$(1)_ON = $$(PE_$(1))/bin/activate
-PE_$(1)_ENV = . $$(PE_$(1))/bin/activate
-PE_$(1)_INIT = $$(PE_$(1))/bin/activate
+env_$(1) = .ci/venv --name=$(1) run
+env_$(1)_dir = $$(shell .ci/venv --name=$(1) dir)
 
-init: $$(PE_$(1)_INIT)
-$$(PE_$(1)_INIT):
-	.ci/mk-venv $(PYTHON) $$(PE_$(1)) $(2)
+init: $$(env_$(1)_dir)
+$$(env_$(1)_dir):
+	.ci/venv --name=$(1) init $(2)
 endef
 
-$(eval $(call penv,APP,-r req-app.txt))
-$(eval $(call penv,DEV,build pdm pdm.pep517 setuptools_scm[toml] tox))
+$(eval $(call penv,app,))
+$(eval $(call penv,dev,-r .ci/requirements.txt))
 
 
 .PHONY: init build install einstall clean distclean test upload
 .DEFAULT_GOAL := build
 
-
 init:
 	@true
 
-build: $(PE_DEV_INIT)
+build: $(env_dev_dir)
 	rm -rf dist/ build/
-	$(PE_DEV_ENV); python -m build -w
+	$(env_dev) python -m build -w
 	ls -Al dist
 
 # XXX: you can put custom wheels to wheels/
-einstall: $(PE_APP_INIT)
-	$(PE_APP_ENV); \
-	pip install -f wheels/ -e .
+einstall: $(env_app_dir)
+	$(env_app) pip install -f wheels/ -e .
 
-install: $(PE_APP_INIT)
-	$(PE_APP_ENV); \
-	pip install -f wheels/ dist/*.whl
+install: $(env_app_dir)
+	$(env_app) pip install -f wheels/ dist/*.whl
 
 clean:
 	rm -rf build/ dist/ .venv
@@ -50,11 +39,9 @@ clean:
 distclean: clean
 	rm -rf cache wheels
 
-test: $(PE_DEV_INIT)
-	$(PE_DEV_ENV); \
-	tox -v $(if $(TOX_ENV),-e $(TOX_ENV))
+test: $(env_dev_dir)
+	$(env_dev) tox -v $(if $(TOX_ENV),-e $(TOX_ENV))
 
-upload: $(PE_DEV_INIT)
+upload: $(env_dev_dir)
 	$(MAKE) build
-	$(PE_DEV_ENV); \
-	pdm publish --no-build -vv $(if $(PYPI_REPO), -r $(PYPI_REPO))
+	$(env_dev) pdm publish --no-build -vv $(if $(PYPI_REPO), -r $(PYPI_REPO))
