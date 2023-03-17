@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/aanatoly/pdk-cookiecutter.git",
-  "commit": "8b736ae2bb5bd1fc3f1b56a194368b5fbc06af58",
+  "commit": "d1c772a22de15761b0789fcfd30ecdc520132485",
   "checkout": null,
   "context": {
     "cookiecutter": {

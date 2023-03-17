@@ -18,7 +18,7 @@ Run dev tool
 
 Run app script, as defined in pyproject.toml
 ```sh
-.ci/venv --name=app script
+.ci/venv --name=app run script
 ```
 
 ### Pre-commit
@@ -29,24 +29,24 @@ Pre-commit hooks run all the auto-formatters (e.g. `black`, `isort`), linters (e
 You can install the hooks with (runs for each commit):
 
 ```sh
-.ci/venv pre-commit install
+.ci/venv run pre-commit install
 ```
 
 Or if you want them to run only for each push:
 
 ```sh
-.ci/venv pre-commit install -t pre-push
+.ci/venv run pre-commit install -t pre-push
 ```
 
 Or if you want e.g. want to run all checks manually for all files:
 
 ```sh
-.ci/venv pre-commit run --all-files
+.ci/venv run pre-commit run --all-files
 ```
 
 ### Update build scripts
 This project was generated using the [pdk-cookiecutter](https://github.com/aanatoly/pdk-cookiecutter) template.
 You can always update build scripts boilerplate by running
 ```sh
-.ci/venv cruft update
+.ci/venv run cruft update
 ```
