@@ -38,3 +38,6 @@ excludes = [ "**/.*.sw*" ]
 
 [tool.cruft]
 skip = ["README.md", "tests/"]
+
+[tool.black]
+line-length = 83
