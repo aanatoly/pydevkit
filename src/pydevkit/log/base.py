@@ -20,19 +20,19 @@ class ColorLevelFormatter(logging.Formatter):
             "INFO": term.grey,
             "WARNING": term.yellow,
             "ERROR": term.red_bold,
-            "CRITICAL": term.red_bold_underline
+            "CRITICAL": term.red_bold_underline,
         }
-        if 'format' in kwargs:
-            kwargs['fmt'] = kwargs['format']
-            del kwargs['format']
-        if 'colors' in kwargs:
-            self.colors.update(kwargs['colors'])
-            del kwargs['colors']
+        if "format" in kwargs:
+            kwargs["fmt"] = kwargs["format"]
+            del kwargs["format"]
+        if "colors" in kwargs:
+            self.colors.update(kwargs["colors"])
+            del kwargs["colors"]
         logging.Formatter.__init__(self, *args, **kwargs)
 
     def format(self, record):
         term = term_get()
-        record.clr_level = self.colors.get(record.levelname, '')
+        record.clr_level = self.colors.get(record.levelname, "")
         record.clr_details = term.white_dim
         record.clr_reset = term.normal
         return logging.Formatter.format(self, record)
@@ -44,11 +44,11 @@ class JsonFormatter(logging.Formatter):
     def __init__(self, *args, **kwargs):
         # print('='*20 + ' JsonFormatter ' + str(kwargs))
         # term_print("JsonFormatter")
-        if 'format' in kwargs:
-            kwargs['fmt'] = kwargs['format']
-            del kwargs['format']
-        reg = '%\\((?P<name>[^)]+)\\)s'
-        self.props = [p.group(1) for p in re.finditer(reg, kwargs['fmt'])]
+        if "format" in kwargs:
+            kwargs["fmt"] = kwargs["format"]
+            del kwargs["format"]
+        reg = "%\\((?P<name>[^)]+)\\)s"
+        self.props = [p.group(1) for p in re.finditer(reg, kwargs["fmt"])]
         logging.Formatter.__init__(self, *args, **kwargs)
 
     def format(self, record):
@@ -60,11 +60,10 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(rc)
 
 
-_app_name = sys.argv[0].split('/')[-1]
+_app_name = sys.argv[0].split("/")[-1]
 
 
 class AppNameFilter(logging.Filter):
-
     def __init__(self, name=None, threads="no"):
         self.app_name = name if name else _app_name
         self.threads = threads
@@ -73,15 +72,15 @@ class AppNameFilter(logging.Filter):
     def filter(self, record):
         record.appname = self.app_name
         if self.threads == "yes":
-            record.appname += ':' + threading.current_thread().name
+            record.appname += ":" + threading.current_thread().name
         return True
 
 
 class TimeFilter(logging.Filter):
     _format = {
-        "datetime": '%Y-%m-%d %H:%M:%S',
-        "date": '%Y-%m-%d',
-        "time": '%H:%M:%S'
+        "datetime": "%Y-%m-%d %H:%M:%S",
+        "date": "%Y-%m-%d",
+        "time": "%H:%M:%S",
     }
 
     def __init__(self, format="datetime"):
@@ -95,7 +94,6 @@ class TimeFilter(logging.Filter):
 
 
 class ExtraFilter(logging.Filter):
-
     def filter(self, record):
         if not hasattr(record, "extra"):
             record.extra = ""
@@ -103,13 +101,12 @@ class ExtraFilter(logging.Filter):
 
 
 class LogNameFilter(logging.Filter):
-
     def filter(self, record):
         record.logname = record.name
         pfx = "debug."
         if record.logname.startswith(pfx):
-            record.logname = record.logname[len(pfx):]
+            record.logname = record.logname[len(pfx) :]
         pfx = "__main__"
         if record.logname.startswith(pfx):
-            record.logname = 'main' + record.logname[len(pfx):]
+            record.logname = "main" + record.logname[len(pfx) :]
         return True

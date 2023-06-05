@@ -2,11 +2,11 @@ import sys
 from .conf import conf_get
 
 import logging
+
 log = logging.getLogger(__name__)
 
 
 class Terminal:
-
     color_codes = {
         "black": "0",
         "red": "1",
@@ -15,7 +15,7 @@ class Terminal:
         "blue": "4",
         "magenta": "5",
         "cyan": "6",
-        "white": "7"
+        "white": "7",
     }
 
     tone_codes = {
@@ -28,11 +28,11 @@ class Terminal:
         "blink2": "6",
         "reverse": "7",
         "hide": "8",
-        "overstrike": "9"
+        "overstrike": "9",
     }
 
     def __init__(self, colors="auto"):
-        if colors == 'auto':
+        if colors == "auto":
             colors = "yes" if sys.stderr.isatty() else "no"
         self.colors = colors
 
@@ -42,8 +42,8 @@ class Terminal:
             return ""
         cflag = "fg"
         rc = []
-        for n in name.split('_'):
-            if n == 'on':
+        for n in name.split("_"):
+            if n == "on":
                 cflag = "bg"
                 continue
             if n in self.color_codes:
@@ -55,9 +55,9 @@ class Terminal:
                 rc.append(self.tone_codes[n])
 
         if rc:
-            return '\x1b[' + ';'.join(rc) + 'm'
+            return "\x1b[" + ";".join(rc) + "m"
         return ""
 
 
 def term_get():
-    return Terminal(conf_get('color'))
+    return Terminal(conf_get("color"))

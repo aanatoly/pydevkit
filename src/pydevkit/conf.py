@@ -1,9 +1,10 @@
 import logging
+
 log = logging.getLogger(__name__)
 
 
 conf = {
-    'term': None
+    "term": None,
 }
 
 

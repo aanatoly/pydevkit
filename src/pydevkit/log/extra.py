@@ -3,13 +3,13 @@ import re
 
 
 class _AllEncoder(json.JSONEncoder):
-    reg = re.compile('\\s+at\\s+[^>]+')
+    reg = re.compile("\\s+at\\s+[^>]+")
 
     def no_addr(self, s):
-        return self.reg.sub('', s)
+        return self.reg.sub("", s)
 
     def default(self, obj):
-        if hasattr(obj, '__call__'):
+        if hasattr(obj, "__call__"):
             return self.no_addr(str(obj))
         elif isinstance(obj, object):
             return self.no_addr(str(obj))

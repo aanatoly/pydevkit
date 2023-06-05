@@ -1,11 +1,12 @@
 import subprocess as sp
 
 import logging
+
 log = logging.getLogger(__name__)
 
 
 class Shell(object):
-    def __init__(self, exe='/bin/bash'):
+    def __init__(self, exe="/bin/bash"):
         self.fmt = {}
         self.exe = exe
 
@@ -13,9 +14,9 @@ class Shell(object):
         cmd = cmd % self.fmt
         log.debug("shell '%s'", cmd)
         kwargs = {
-            'shell': True,
-            'executable': self.exe,
-            'universal_newlines': True
+            "shell": True,
+            "executable": self.exe,
+            "universal_newlines": True,
         }
         if output:
             rc = sp.check_output(cmd, **kwargs).strip()
