@@ -138,6 +138,22 @@ then pass it to the parser
 p = ArgumentParser(help=__doc__)
 ```
 
+### Environment-aware options
+You can make `argparse` arguments to look into environment for values.
+The lookup order is "command line `>` environment `>` default". To use this
+feature, use `EnvAction` action.
+
+```python
+from pydevkit.argparse import ArgumentParser, EnvAction
+
+p = ArgumentParser()
+p.add_argument(
+   "--log-level",  help="...", default="info",
+   action=EnvAction, envvar="PYDEVKIT_LOG_LEVEL"
+)
+
+```
+
 ## ANSI colors
 
 ANSI colors controlled by `--log-color` option.
