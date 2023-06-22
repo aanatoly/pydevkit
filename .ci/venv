@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Run pythoon scripts in virtual environments
+# Manage python virtual environments
 #
 # usage: venv [--name=NAME] command [arguemnts]
 #
@@ -10,11 +10,9 @@
 #  --py          python to use, default is "python3"
 #
 # Commands:
-#   init  - create venv and install packages. You can run this command
-#           multiple times to install more packages. Packages should be
-#           specified in pip format, eg "-r requirements.txt pkg1 pkg2"
-#
+#   init  - create venv
 #   run   - run script in a venv
+#   dir   - print venv directory
 #   list  - list venvs
 #
 # Environment variables:
@@ -22,9 +20,12 @@
 #
 # Examples:
 #   # create venv and install packages from requirements.txt
-#   venv --name=dev init -r requirements.txt
+#   venv --name=dev init
+#   venv --name=dev run pip install -r requirements.txt
+#
 #   # install more packages to existing 'dev' venv
-#   venv --name=dev init flake8
+#   venv --name=dev run pip install flake8
+#
 #   # run flake8
 #   venv --name=dev run flake8 src/
 #
@@ -36,56 +37,46 @@ ARG_DEBUG=
 ARG_NAME=dev
 ARG_PY=
 
-
 # {{{ logging
 PROG="${0##*/}"
 declare -A _fmt=(
-[dbg]="\e[33;1m$PROG\e[0m: %s"
-[msg]="\e[33;1m$PROG\e[0m: \e[1m%s\e[0m"
-[err]="\e[32;1m$PROG\e[0m: %s"
+    [dbg]="\e[33;1m$PROG\e[0m: %s"
+    [msg]="\e[33;1m$PROG\e[0m: \e[1m%s\e[0m"
+    [err]="\e[31;1m$PROG\e[0m: \e[1m%s\e[0m"
 )
 
-_log()
-{
+_log() {
     printf "$1\n" "$2" >&2
 }
 
-
-err()
-{
+err() {
     _log "${_fmt[err]}" "$1"
 }
-
 
 msg() {
     _log "${_fmt[msg]}" "$1"
 }
-
 
 dbg() {
     [[ "$ARG_DEBUG" == "yes" ]] || return 0
     _log "${_fmt[dbg]}" "$1"
 }
 
-
 # }}}
 
 # {{{ argument parsing
 
-usage()
-{
+usage() {
     # prints first paragraph, which is main comment block
     cat $0 | sed -n '2,/^$/ p' | sed -e 's/^#[[:space:]]\?//'
 }
 
-
-set_var()
-{
+set_var() {
     local name="${1%%=*}"
     oname="${name//-/_}"
     oname="ARG_${oname^^}"
     if [[ -z "$(compgen -v $oname)" ]]; then
-        echo  "unexpected argument: $name" >&2
+        echo "unexpected argument: $name" >&2
         exit 1
     fi
     local value="${1#*=}"
@@ -94,36 +85,33 @@ set_var()
 
 declare -a ARG_ARGS
 
-argparse()
-{
+argparse() {
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            -h|--help)
-                usage
-                exit 0
-                ;;
-            --)
-                shift
-                break
-                ;;
-            --*=*)
-                set_var "${1:2}"
-                ;;
-            *)
-                break
-                ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        --*=*)
+            set_var "${1:2}"
+            ;;
+        *)
+            break
+            ;;
         esac
         shift
     done
-    ARG_ARGS=( "$@" )
+    ARG_ARGS=("$@")
     [[ -z "$ARG_DEBUG" ]] || argparse_dbg
 }
 
-
-argparse_dbg()
-{
+argparse_dbg() {
     echo "Options:"
-    for arg in $(compgen -v ARG_ | grep -v ARG_ARGS ); do
+    for arg in $(compgen -v ARG_ | grep -v ARG_ARGS); do
         echo "$arg='${!arg}'"
     done
     echo "ARG_ARGS=(${ARG_ARGS[@]})"
@@ -134,56 +122,67 @@ argparse_dbg()
 
 set -e
 
-
 main() {
+    cmd="$1"
+    shift
+
+    if [ "$cmd" == "list" ]; then
+        for e in $(find .venv -maxdepth 2 -mindepth 2 2>/dev/null); do
+            msg "vrtual env $e"
+            $e/bin/python --version
+            $e/bin/pip --version
+            echo "Installed $($e/bin/pip freeze | wc -l) packages"
+        done
+        exit
+    fi
+
     if [ -z "$ARG_PY" -a -n "$PYTHON" ]; then
         ARG_PY="$PYTHON"
     fi
     if [ -z "$ARG_PY" ]; then
         ARG_PY="python3"
     fi
-    dbg "python: $ARG_PY"
-
-    cmd="$1"
-    shift
-
-    if [ "$cmd" == "list" ]; then
-        find .venv -maxdepth 2 -mindepth 2 2>/dev/null
-        exit
+    ARG_PY_orig="$ARG_PY"
+    ARG_PY=$(compgen -c $ARG_PY | sed 's/-.*//' | sort -Vu | tail -n 1)
+    if [ -z "$ARG_PY" ]; then
+        err "no python found: $ARG_PY_orig"
+        exit 1
+    fi
+    dbg "python: $ARG_PY at $(which $ARG_PY)"
+    vdir=".venv/py-${ARG_PY#python}/$ARG_NAME"
+    if [ -z "$vdir" ]; then
+        err "can't get venv path"
+        exit 1
     fi
 
-    vdir=".venv/py-`$ARG_PY --version | sed -e 's/.*\s\+//'`/$ARG_NAME"
-    if [ "$cmd" == "dir" ]; then
-        echo "$vdir"
-        exit
-    fi
-
-    msg "venv: $vdir"
     if [ "$cmd" == "init" ]; then
         if ! [ -d "$vdir" ]; then
-            msg "create venv"
+            msg "venv '$vdir' create"
             $ARG_PY -m venv "$vdir"
             $vdir/bin/pip install -U pip setuptools wheel
+            $vdir/bin/pip config --site set global.disable-pip-version-check 1
+        else
+            msg "venv '$vdir' already created"
         fi
-        if [ $# -gt 0 ]; then
-            msg "install $*"
-            $vdir/bin/pip install -f wheels/ "$@"
-        fi
+        exit
+    fi
+
+    if [ "$cmd" == "dir" ]; then
+        echo "$vdir"
         exit
     fi
 
     if [ "$cmd" == "run" ]; then
         . $vdir/bin/activate
         if [ $# -gt 0 ]; then
-            msg "run $*"
+            msg "venv '$vdir' run '$*'"
             eval "$@"
         else
-            msg "run shell"
+            msg "venv '$vdir' run 'bash'"
             bash
         fi
     fi
 }
-
 
 argparse "$@"
 main "${ARG_ARGS[@]}"

@@ -1,5 +1,9 @@
 
 SHELL := /bin/bash
+.SHELLFLAGS := -eu -o pipefail -c
+.DEFAULT_GOAL := init
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
 export PYTHON ?= python3
 
 define penv
@@ -8,7 +12,10 @@ env_$(1)_dir = $$(shell .ci/venv --name=$(1) dir)
 
 init: $$(env_$(1)_dir)
 $$(env_$(1)_dir):
-	.ci/venv --name=$(1) init $(2)
+	.ci/venv --name=$(1) init
+ifneq ($(2),)
+	.ci/venv --name=$(1) run pip install -f wheels/ $(2)
+endif
 endef
 
 $(eval $(call penv,app,))
@@ -16,7 +23,6 @@ $(eval $(call penv,dev,-r .ci/requirements.txt))
 
 
 .PHONY: init build install einstall clean distclean test upload
-.DEFAULT_GOAL := build
 
 init:
 	@true
@@ -41,6 +47,12 @@ distclean: clean
 
 test: $(env_dev_dir)
 	$(env_dev) tox -v $(if $(TOX_ENV),-e $(TOX_ENV))
+
+lint: $(env_dev_dir)
+	$(env_dev) pre-commit run $(if $(V),-v)
+
+lint-all: $(env_dev_dir)
+	$(env_dev) pre-commit run --all-files $(if $(V),-v)
 
 upload: $(env_dev_dir)
 	$(MAKE) build

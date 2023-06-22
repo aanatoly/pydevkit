@@ -1,0 +1,54 @@
+spellchecker: hunspell
+# spellchecker: aspell
+matrix:
+- name: markdown
+  pipeline:
+  - pyspelling.filters.markdown:
+      markdown_extensions:
+      - markdown.extensions.extra:
+  - pyspelling.filters.html:
+      comments: false
+      attributes:
+      - title
+      - alt
+      ignores:
+      - ':matches(code, pre)'
+      - code
+      - pre
+      - a
+      - h1
+  sources:
+  # enable all md files
+  # - '**/*.md'
+  - 'docs/*.md'
+  - 'README.md'
+  dictionary:
+    wordlists:
+    - docs/hunspell-en-custom.txt
+    output: build/dictionary/hunspell-en-custom.dic
+
+- name: python
+  pipeline:
+  - pyspelling.filters.python:
+      strings: false
+      comments: false
+      docstrings: true
+  - pyspelling.filters.context:
+      context_visible_first: true
+      escapes: \\[\\`~]
+      delimiters:
+      # Ignore multiline content between fences (fences can have 3 or more back ticks)
+      # ```
+      # content
+      # ```
+      - open: '(?s)^(?P<open> *`{3,})$'
+        close: '^(?P=open)$'
+      # Ignore text between inline back ticks
+      - open: '(?P<open>`+)'
+        close: '(?P=open)'
+  sources:
+  - src/**/*.py
+  dictionary:
+    wordlists:
+    - docs/hunspell-en-custom.txt
+    output: build/dictionary/hunspell-en-custom.dic

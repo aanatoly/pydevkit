@@ -1,0 +1,58 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+    - id: check-added-large-files
+    - id: check-merge-conflict
+    - id: check-json
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+    - id: mixed-line-ending
+    - id: requirements-txt-fixer
+
+- repo: https://github.com/scop/pre-commit-shfmt
+  rev: v3.7.0-1
+  hooks:
+    - id: shfmt-docker
+      args: [-i, "4", -w, -l]
+
+- repo: https://github.com/abravalheri/validate-pyproject
+  rev: v0.13
+  hooks:
+    - id: validate-pyproject
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.0.272
+  hooks:
+    - id: ruff
+      args: [-v, --fix, --show-fixes, --exit-non-zero-on-fix]
+
+- repo: https://github.com/psf/black
+  rev: 23.3.0
+  hooks:
+    - id: black
+      args: [-v]
+
+- repo: https://github.com/PyCQA/flake8
+  rev: 6.0.0
+  hooks:
+    - id: flake8
+      args: [-v]
+
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.35.0
+  hooks:
+    - id: markdownlint-fix-docker
+      args: [-c, docs/markdownlint.jsonc]
+
+- repo: local
+  hooks:
+    - id: spell-checker
+      name: spell-checker
+      entry: .ci/venv run pyspelling
+      language: system
+      pass_filenames: false
+      types: [text]
+      require_serial: false
+      args: [-v, -c, docs/pyspelling.yml]

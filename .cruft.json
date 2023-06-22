@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/aanatoly/pdk-cookiecutter.git",
-  "commit": "d1c772a22de15761b0789fcfd30ecdc520132485",
+  "commit": "535bf7a9c92a1664d797eff19881bbac03080b6d",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -12,6 +12,9 @@
       "package_name": "pydevkit",
       "project_short_description": "python development kit",
       "build_backend": "pdm",
+      "max_line_length": "83",
+      "build_docker": "no",
+      "use_spelling": "yes",
       "_copy_without_render": [
         ".ci/venv"
       ],

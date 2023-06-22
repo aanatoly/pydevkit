@@ -1,0 +1,7 @@
+pydevkit
+venv/environment
+linter/checker
+formatter/checker
+backtick/checker
+EPILOG
+PYPI

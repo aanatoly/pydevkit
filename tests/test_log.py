@@ -32,7 +32,7 @@ class PrettifyTest(unittest.TestCase):
         2,
         3
     ],
-    "obj": "test_formatting (tests.test_log.PrettifyTest)"
+    "obj": "test_formatting (tests.test_log.PrettifyTest.test_formatting)"
 }'''
         rc = prettify(rc)
         self.assertEqual(rc, answer)
