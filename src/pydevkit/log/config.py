@@ -29,10 +29,7 @@ defaultConf = {
         },
     },
     "filters": {
-        "app_name": {
-            "()": "pydevkit.log.AppNameFilter",
-            "threads": "no"
-        },
+        "app_name": {"()": "pydevkit.log.AppNameFilter", "threads": "no"},
         "time": {
             "()": "pydevkit.log.TimeFilter",
             "format": "%DATE%",
@@ -43,25 +40,25 @@ defaultConf = {
         "app_mini": {
             "()": "pydevkit.log.ColorLevelFormatter",
             "format": "%(clr_details)s%(time)s%(clr_reset)s :: %(appname)s :: "
-                      "%(clr_level)s%(levelname)-5s%(clr_reset)s :: "
-                      "%(message)s %(extra)s",
+            "%(clr_level)s%(levelname)-5s%(clr_reset)s :: "
+            "%(message)s %(extra)s",
         },
         "app": {
             "()": "pydevkit.log.ColorLevelFormatter",
             "format": "%(clr_details)s%(time)s%(clr_reset)s :: %(appname)s :: "
-                      "%(clr_level)s%(levelname)-5s%(clr_reset)s :: "
-                      "%(message)s "
-                      "%(extra)s :: %(clr_details)s%(name)s%(clr_reset)s",
+            "%(clr_level)s%(levelname)-5s%(clr_reset)s :: "
+            "%(message)s "
+            "%(extra)s :: %(clr_details)s%(name)s%(clr_reset)s",
         },
         "json_mini": {
             "()": "pydevkit.log.JsonFormatter",
             "format": "%(appname)s %(name)s %(levelname)s %(message)s "
-                      "%(extra)s",
+            "%(extra)s",
         },
         "json": {
             "()": "pydevkit.log.JsonFormatter",
             "format": "%(time)s %(appname)s %(levelno)s %(levelname)s "
-                      "%(message)s %(extra)s %(name)s",
+            "%(message)s %(extra)s %(name)s",
         },
     },
 }
@@ -73,24 +70,24 @@ def _get_conf(kwargs):
         "handler": "app_mini",
         "date": "datetime",
         "color": "auto",
-        "threads": 'yes'
+        "threads": "yes",
     }
     vals = dict(ovals)
     vals.update(kwargs)
-    conf_set('level', vals["level"].upper())
-    defaultConf["loggers"][""]["level"] = conf_get('level')
+    conf_set("level", vals["level"].upper())
+    defaultConf["loggers"][""]["level"] = conf_get("level")
     defaultConf["handlers"]["app_handler"]["formatter"] = vals["handler"]
     if vals["handler"] == "app_mini":
         if "date" not in kwargs:
             vals["date"] = "time"
-    color = vals['color']
-    if color == 'auto':
+    color = vals["color"]
+    if color == "auto":
         color = "yes" if sys.stderr.isatty() else "no"
-    conf_set('color', color)
+    conf_set("color", color)
     term_set(color)
 
     defaultConf["filters"]["time"]["format"] = vals["date"]
-    defaultConf["filters"]["app_name"]["threads"] = vals['threads']
+    defaultConf["filters"]["app_name"]["threads"] = vals["threads"]
     return defaultConf
 
 

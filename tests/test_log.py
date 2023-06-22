@@ -11,16 +11,14 @@ class PrettifyTest(unittest.TestCase):
 
     def test_formatting(self):
         rc = {
-            'list': [1, 2, 3],
-            'dict': {
-                'func': self.setUp,
-                'list': [1, 2, 3]
-            },
-            'obj': self
+            "list": [1, 2, 3],
+            "dict": {"func": self.setUp, "list": [1, 2, 3]},
+            "obj": self,
         }
-        answer = '''{
+        answer = """{
     "dict": {
-        "func": "<bound method PrettifyTest.setUp of <tests.test_log.PrettifyTest testMethod=test_formatting>>",
+        "func": "<bound method PrettifyTest.setUp of \
+<tests.test_log.PrettifyTest testMethod=test_formatting>>",
         "list": [
             1,
             2,
@@ -33,6 +31,6 @@ class PrettifyTest(unittest.TestCase):
         3
     ],
     "obj": "test_formatting (tests.test_log.PrettifyTest.test_formatting)"
-}'''
+}"""
         rc = prettify(rc)
         self.assertEqual(rc, answer)
